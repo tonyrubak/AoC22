@@ -32,16 +32,6 @@ defmodule Aoc22.DayTwo do
   def score_symbol(:paper), do: 2
   def score_symbol(:scissors), do: 3
 
-  def my_symbol({:rock,:lose}), do: :scissors
-  def my_symbol({:rock,:draw}), do: :rock
-  def my_symbol({:rock,:win}), do: :paper
-  def my_symbol({:paper,:lose}), do: :rock
-  def my_symbol({:paper,:draw}), do: :paper
-  def my_symbol({:paper,:win}), do: :scissors
-  def my_symbol({:scissors,:lose}), do: :paper
-  def my_symbol({:scissors,:draw}), do: :scissors
-  def my_symbol({:scissors,:win}), do: :rock
-
   def score_outcome({:rock, :rock}), do: 3
   def score_outcome({:rock, :paper}), do: 6
   def score_outcome({:rock, :scissors}), do: 0
@@ -53,7 +43,18 @@ defmodule Aoc22.DayTwo do
   def score_outcome({:scissors, :scissors}), do: 3
 
   def score_round({opp, _self} = round) do
-    mine = my_symbol(round)
+    my_symbol = fn
+      {:rock,:lose} -> :scissors
+      {:rock,:draw} -> :rock
+      {:rock,:win} -> :paper
+      {:paper,:lose} -> :rock
+      {:paper,:draw} -> :paper
+      {:paper,:win} -> :scissors
+      {:scissors,:lose} -> :paper
+      {:scissors,:draw} -> :scissors
+      {:scissors,:win} -> :rock
+    end
+    mine = my_symbol.(round)
     score_outcome({opp,mine}) + score_symbol(mine)
   end
 
