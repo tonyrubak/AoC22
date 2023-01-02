@@ -21,13 +21,26 @@ defmodule Aoc22.DayTwo do
   def parse_symbol("A"), do: :rock
   def parse_symbol("B"), do: :paper
   def parse_symbol("C"), do: :scissors
-  def parse_symbol("X"), do: :rock
-  def parse_symbol("Y"), do: :paper
-  def parse_symbol("Z"), do: :scissors
+  # def parse_symbol("X"), do: :rock
+  # def parse_symbol("Y"), do: :paper
+  # def parse_symbol("Z"), do: :scissors
+  def parse_symbol("X"), do: :lose
+  def parse_symbol("Y"), do: :draw
+  def parse_symbol("Z"), do: :win
 
   def score_symbol(:rock), do: 1
   def score_symbol(:paper), do: 2
   def score_symbol(:scissors), do: 3
+
+  def my_symbol({:rock,:lose}), do: :scissors
+  def my_symbol({:rock,:draw}), do: :rock
+  def my_symbol({:rock,:win}), do: :paper
+  def my_symbol({:paper,:lose}), do: :rock
+  def my_symbol({:paper,:draw}), do: :paper
+  def my_symbol({:paper,:win}), do: :scissors
+  def my_symbol({:scissors,:lose}), do: :paper
+  def my_symbol({:scissors,:draw}), do: :scissors
+  def my_symbol({:scissors,:win}), do: :rock
 
   def score_outcome({:rock, :rock}), do: 3
   def score_outcome({:rock, :paper}), do: 6
@@ -39,8 +52,9 @@ defmodule Aoc22.DayTwo do
   def score_outcome({:scissors, :paper}), do: 0
   def score_outcome({:scissors, :scissors}), do: 3
 
-  def score_round({_opp, self} = round) do
-    score_outcome(round) + score_symbol(self)
+  def score_round({opp, _self} = round) do
+    mine = my_symbol(round)
+    score_outcome({opp,mine}) + score_symbol(mine)
   end
 
   def score_strategy(rounds) do
