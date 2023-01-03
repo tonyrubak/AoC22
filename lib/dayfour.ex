@@ -7,8 +7,16 @@ defmodule Aoc22.DayFour do
   def process_data(data,processor) do
     data
     |> String.splitter("\n")
-    |> Enum.map(processor)
+    |> Enum.map(fn x -> process_line(x,processor) end)
     |> Enum.sum
+  end
+
+  def process_line(line,processor) do
+    line
+    |> String.splitter(",")
+    |> Enum.map(&parse_range/1)
+    |> processor.()
+    |> count_true
   end
 
   def process_line_proper(line) do

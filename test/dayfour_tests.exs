@@ -15,7 +15,7 @@ defmodule Aoc22DayFourTest do
 
   test "processes test data correctly" do
     data = "2-4,6-8\n2-3,4-5\n5-7,7-9\n2-8,3-7\n6-6,4-6\n2-6,4-8"
-    assert Aoc22.DayFour.process_data(data, &Aoc22.DayFour.process_line_proper/1) == 2
+    assert Aoc22.DayFour.process_data(data, &Aoc22.DayFour.proper_subset/1) == 2
   end
 
   ### Possible cases
@@ -47,6 +47,6 @@ defmodule Aoc22DayFourTest do
 
   test "correctly categorizes 14..39, 14..85 as true" do
     data = "14-39,14-85"
-    assert Aoc22.DayFour.process_line_proper(data) == 1
+    assert Aoc22.DayFour.process_line(data,&Aoc22.DayFour.proper_subset/1) == 1
   end
 end
