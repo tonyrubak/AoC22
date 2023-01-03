@@ -14,7 +14,7 @@ defmodule Aoc22.DayFour do
   def process_line_proper(line) do
     line
     |> String.splitter(",")
-    |> Enum.map(&(parse_range(&1)))
+    |> Enum.map(&parse_range/1)
     |> proper_subset()
     |> count_true
   end
@@ -22,7 +22,7 @@ defmodule Aoc22.DayFour do
   def process_line_subset(line) do
     line
     |> String.splitter(",")
-    |> Enum.map(&(parse_range(&1)))
+    |> Enum.map(&parse_range/1)
     |> subset()
     |> count_true
   end
@@ -30,7 +30,7 @@ defmodule Aoc22.DayFour do
   def parse_range(item) do
     [low | [high | []]] = item
     |> String.splitter("-")
-    |> Enum.map(&(String.to_integer(&1)))
+    |> Enum.map(&String.to_integer/1)
     low..high
   end
 
