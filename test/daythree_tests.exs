@@ -20,4 +20,9 @@ defmodule Aoc22DayThreeTest do
     assert Aoc22.DayThree.find_duplicate(data) == 42
   end
 
+  test "given three bags finds the one item common amongst all three" do
+    data = ["vJrwpWtwJgWrhcsFMMfFFhFp","jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL","PmmdzqPrVvPwwTWBwg"]
+    assert Aoc22.DayThree.find_badge(data) == 18
+  end
+
 end

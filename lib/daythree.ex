@@ -36,10 +36,37 @@ defmodule Aoc22.DayThree do
     c - 0x41 + 27
   end
 
+  def find_badge(bags), do: find_badge(bags, 0)
+
+  def find_badge([], total), do: total
+
+  def find_badge([a | [b | [c | tl]]], total) do
+    badge = [a,b,c]
+    |> Enum.map(fn x -> String.to_charlist(x) end)
+    |> Enum.map(fn x -> MapSet.new(x) end)
+    |> intersect3()
+    |> MapSet.to_list()
+    |> decode
+    find_badge(tl, total + badge)
+  end
+
+  def intersect3([a,b,c]) do
+    a
+    |> MapSet.intersection(b)
+    |> MapSet.intersection(c)
+  end
+
   def run() do
     read_data()
     |> parse_data()
     |> Enum.map(fn it -> find_duplicate it end)
     |> Enum.sum
+  end
+
+  def run2() do
+    read_data()
+    |> parse_data()
+    |> Enum.to_list()
+    |> find_badge()
   end
 end
