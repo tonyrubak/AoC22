@@ -44,12 +44,9 @@ defmodule Aoc22.DaySeven do
   # Given a tree and a path determines the total size of the directory at that path
   # Path must be in root-first order
   def dir_size(%{type: :directory} = dir, [h|t]), do: dir_size(dir[h], t)
-  def dir_size(%{type: :directory} = dir, []), do: Enum.sum(Enum.map(dir, fn {_k,v} -> item_size(v) end))
-
-  def item_size(%{type: :directory} = dir), do: dir_size(dir,[])
-  def item_size(%{type: :file} = file), do: file[:size]
-  def item_size(:directory), do: 0
-  def item_size(nil), do: 0
+  def dir_size(%{type: :directory} = dir, []), do: Enum.sum(Enum.map(dir, fn {_k,v} -> dir_size(v,[]) end))
+  def dir_size(%{size: size},[]), do: size
+  def dir_size(_,_), do: 0
 end
 
 defmodule Aoc22.DaySevenParser do
