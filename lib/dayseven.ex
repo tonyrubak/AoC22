@@ -16,6 +16,13 @@ defmodule Aoc22.DaySeven do
     |> Enum.map(fn path -> dir_size(tree, Enum.reverse(path)) end)
     |> Enum.filter(fn item -> item < 100000 end)
     |> Enum.sum()
+
+    free_space = 70000000 - dir_size(tree,["/"])
+    needed = 30000000 - free_space
+    paths
+    |> Enum.map(fn path -> dir_size(tree, Enum.reverse(path)) end)
+    |> Enum.filter(fn item -> item >= needed end)
+    |> Enum.min()
   end
 
   def reducer([cd: "/"],{_path,paths,res}), do: {["/"],paths,res}
