@@ -10,10 +10,35 @@ defmodule Aoc22.DayNine do
     |> Enum.map(&Aoc22.DayNineParser.parse/1)
     |> Enum.map(fn it -> elem(it, 1) end)
     |> Enum.map(fn [direction: dir, distance: dis] -> {List.to_string([dir]), dis} end)
-    |> Enum.reduce([{0,0}],&generate_path/2)
+    |> Enum.reduce([{0,0}],&generate_path/2) # H
     |> Enum.reverse
-    |> Enum.reduce({{0,0},[{0,0}]},&follow/2)
+    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 1
     |> elem(1)
+    |> Enum.reverse()
+    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 2
+    |> elem(1)
+    |> Enum.reverse()
+    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 3
+    |> elem(1)
+    |> Enum.reverse()
+    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 4
+    |> elem(1)
+    |> Enum.reverse()
+    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 5
+    |> elem(1)
+    |> Enum.reverse()
+    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 6
+    |> elem(1)
+    |> Enum.reverse()
+    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 7
+    |> elem(1)
+    |> Enum.reverse()
+    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 8
+    |> elem(1)
+    |> Enum.reverse()
+    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 9
+    |> elem(1)
+    |> Enum.reverse()
     |> MapSet.new()
     |> MapSet.size()
   end
@@ -35,12 +60,12 @@ defmodule Aoc22.DayNine do
     dx = if dx == 0 do
       dx
     else
-      trunc(dx/abs(dx))
+      div(dx,abs(dx))
     end
     dy = if dy == 0 do
       dy
     else
-      trunc(dy/abs(dy))
+      div(dy,abs(dy))
     end
     new_tail = cond do
       dist <= @sqrt2 -> tail
