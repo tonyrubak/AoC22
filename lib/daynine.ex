@@ -10,63 +10,43 @@ defmodule Aoc22.DayNine do
     |> Enum.map(&Aoc22.DayNineParser.parse/1)
     |> Enum.map(fn it -> elem(it, 1) end)
     |> Enum.map(fn [direction: dir, distance: dis] -> {List.to_string([dir]), dis} end)
-    |> Enum.reduce({{0,0},{0,0},MapSet.new([{0,0}])}, &path_reducer/2)
-    |> elem(2)
+    |> Enum.reduce([{0,0}],&generate_path/2)
+    |> Enum.reverse
+    |> Enum.reduce({{0,0},[{0,0}]},&follow/2)
+    |> elem(1)
+    |> MapSet.new()
     |> MapSet.size()
   end
 
-  def path_reducer({_,0},acc), do: acc
-  # Same X and Y
-  def path_reducer({"U", dist}, {{hx,hy},{hx,hy},locs}), do: path_reducer({"U", dist - 1},{{hx,hy+1},{hx,hy},MapSet.put(locs,{hx,hy})})
-  def path_reducer({"D", dist}, {{hx,hy},{hx,hy},locs}), do: path_reducer({"D", dist - 1},{{hx,hy-1},{hx,hy},MapSet.put(locs,{hx,hy})})
-  def path_reducer({"R", dist}, {{hx,hy},{hx,hy},locs}), do: path_reducer({"R", dist - 1},{{hx+1,hy},{hx,hy},MapSet.put(locs,{hx,hy})})
-  def path_reducer({"L", dist}, {{hx,hy},{hx,hy},locs}), do: path_reducer({"L", dist - 1},{{hx-1,hy},{hx,hy},MapSet.put(locs,{hx,hy})})
-  # Same X
-  def path_reducer({"U", dist}, {{hx,hy},{hx,ty},locs}) when ty > hy, do: path_reducer({"U", dist - 1},{{hx,hy+1},{hx,ty},MapSet.put(locs,{hx,ty})})
-  def path_reducer({"U", dist}, {{hx,hy},{hx,ty},locs}) when ty < hy, do: path_reducer({"U", dist - 1},{{hx,hy+1},{hx,ty+1},MapSet.put(locs,{hx,ty+1})})
-  def path_reducer({"D", dist}, {{hx,hy},{hx,ty},locs}) when ty > hy, do: path_reducer({"D", dist - 1},{{hx,hy-1},{hx,ty-1},MapSet.put(locs,{hx,ty-1})})
-  def path_reducer({"D", dist}, {{hx,hy},{hx,ty},locs}) when ty < hy, do: path_reducer({"D", dist - 1},{{hx,hy-1},{hx,ty},MapSet.put(locs,{hx,ty})})
-  def path_reducer({"R", dist}, {{hx,hy},{hx,ty},locs}), do: path_reducer({"R", dist - 1},{{hx+1,hy},{hx,ty},MapSet.put(locs,{hx,ty})})
-  def path_reducer({"L", dist}, {{hx,hy},{hx,ty},locs}), do: path_reducer({"L", dist - 1},{{hx-1,hy},{hx,ty},MapSet.put(locs,{hx,ty})})
-  # Same Y
-  def path_reducer({"U", dist}, {{hx,hy},{tx,hy},locs}), do: path_reducer({"U", dist - 1},{{hx,hy+1},{tx,hy},MapSet.put(locs,{tx,hy})})
-  def path_reducer({"D", dist}, {{hx,hy},{tx,hy},locs}), do: path_reducer({"D", dist - 1},{{hx,hy-1},{tx,hy},MapSet.put(locs,{tx,hy})})
-  def path_reducer({"R", dist}, {{hx,hy},{tx,hy},locs}) when tx > hx, do: path_reducer({"R", dist - 1},{{hx+1,hy},{tx,hy},MapSet.put(locs,{tx,hy})})
-  def path_reducer({"R", dist}, {{hx,hy},{tx,hy},locs}) when tx < hx, do: path_reducer({"R", dist - 1},{{hx+1,hy},{tx+1,hy},MapSet.put(locs,{tx+1,hy})})
-  def path_reducer({"L", dist}, {{hx,hy},{tx,hy},locs}) when tx > hx, do: path_reducer({"L", dist - 1},{{hx-1,hy},{tx-1,hy},MapSet.put(locs,{tx-1,hy})})
-  def path_reducer({"L", dist}, {{hx,hy},{tx,hy},locs}) when tx < hx, do: path_reducer({"L", dist - 1},{{hx-1,hy},{tx,hy},MapSet.put(locs,{tx,hy})})
-  # Different X and Y
-  def path_reducer({"U", dist}, {{hx,hy},{tx,ty},locs}) do
-    cond do
-      tx > hx and ty > hy -> path_reducer({"U", dist - 1},{{hx,hy+1},{tx,ty},MapSet.put(locs,{tx,ty})})
-      tx > hx and ty < hy -> path_reducer({"U", dist - 1},{{hx,hy+1},{hx,ty+1},MapSet.put(locs,{hx,ty+1})})
-      tx < hx and ty > hy -> path_reducer({"U", dist - 1},{{hx,hy+1},{tx,ty},MapSet.put(locs,{tx,ty})})
-      tx < hx and ty < hy -> path_reducer({"U", dist - 1},{{hx,hy+1},{hx,ty+1},MapSet.put(locs,{hx,ty+1})})
+  def distance({hx,hy},{tx,ty}), do: :math.sqrt(:math.pow(hx-tx,2) + :math.pow(hy-ty,2))
+
+  @sqrt2 :math.sqrt(2)
+
+  def generate_path({_,0}, path), do: path
+  def generate_path({"U",dist},[{x,y}|_tl]=path), do: generate_path({"U",dist-1},[{x,y+1}|path])
+  def generate_path({"D",dist},[{x,y}|_tl]=path), do: generate_path({"D",dist-1},[{x,y-1}|path])
+  def generate_path({"R",dist},[{x,y}|_tl]=path), do: generate_path({"R",dist-1},[{x+1,y}|path])
+  def generate_path({"L",dist},[{x,y}|_tl]=path), do: generate_path({"L",dist-1},[{x-1,y}|path])
+
+  def follow({hx,hy}=head,{{tx,ty}=tail,res}) do
+    dist = distance(head,tail)
+    dx = (hx - tx)
+    dy = (hy - ty)
+    dx = if dx == 0 do
+      dx
+    else
+      trunc(dx/abs(dx))
     end
-  end
-  def path_reducer({"D", dist}, {{hx,hy},{tx,ty},locs}) do
-    cond do
-      tx > hx and ty > hy -> path_reducer({"D", dist - 1},{{hx,hy-1},{hx,ty-1},MapSet.put(locs,{hx,ty-1})})
-      tx > hx and ty < hy -> path_reducer({"D", dist - 1},{{hx,hy-1},{tx,ty},MapSet.put(locs,{tx,ty})})
-      tx < hx and ty > hy -> path_reducer({"D", dist - 1},{{hx,hy-1},{hx,ty-1},MapSet.put(locs,{hx,ty-1})})
-      tx < hx and ty < hy -> path_reducer({"D", dist - 1},{{hx,hy-1},{tx,ty},MapSet.put(locs,{tx,ty})})
+    dy = if dy == 0 do
+      dy
+    else
+      trunc(dy/abs(dy))
     end
-  end
-  def path_reducer({"R", dist}, {{hx,hy},{tx,ty},locs}) do
-    cond do
-      tx > hx and ty > hy -> path_reducer({"R", dist - 1},{{hx+1,hy},{tx,ty},MapSet.put(locs,{tx,ty})})
-      tx > hx and ty < hy -> path_reducer({"R", dist - 1},{{hx+1,hy},{tx,ty},MapSet.put(locs,{tx,ty})})
-      tx < hx and ty > hy -> path_reducer({"R", dist - 1},{{hx+1,hy},{tx+1,hy},MapSet.put(locs,{tx+1,hy})})
-      tx < hx and ty < hy -> path_reducer({"R", dist - 1},{{hx+1,hy},{tx+1,hy},MapSet.put(locs,{tx+1,hy})})
+    new_tail = cond do
+      dist <= @sqrt2 -> tail
+      dist > @sqrt2 -> {tx+dx,ty+dy}
     end
-  end
-  def path_reducer({"L", dist}, {{hx,hy},{tx,ty},locs}) do
-    cond do
-      tx > hx and ty > hy -> path_reducer({"L", dist - 1},{{hx-1,hy},{tx-1,hy},MapSet.put(locs,{tx-1,hy})})
-      tx > hx and ty < hy -> path_reducer({"L", dist - 1},{{hx-1,hy},{tx-1,hy},MapSet.put(locs,{tx-1,hy})})
-      tx < hx and ty > hy -> path_reducer({"L", dist - 1},{{hx-1,hy},{tx,ty},MapSet.put(locs,{tx,ty})})
-      tx < hx and ty < hy -> path_reducer({"L", dist - 1},{{hx-1,hy},{tx,ty},MapSet.put(locs,{tx,ty})})
-    end
+    {new_tail, [new_tail | res]}
   end
 end
 
