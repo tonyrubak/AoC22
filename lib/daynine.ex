@@ -5,40 +5,21 @@ defmodule Aoc22.DayNine do
   end
 
   def process(data) do
-    data
+    path = data
     |> String.splitter("\n")
     |> Enum.map(&Aoc22.DayNineParser.parse/1)
     |> Enum.map(fn it -> elem(it, 1) end)
     |> Enum.map(fn [direction: dir, distance: dis] -> {List.to_string([dir]), dis} end)
     |> Enum.reduce([{0,0}],&generate_path/2) # H
     |> Enum.reverse
-    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 1
-    |> elem(1)
-    |> Enum.reverse()
-    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 2
-    |> elem(1)
-    |> Enum.reverse()
-    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 3
-    |> elem(1)
-    |> Enum.reverse()
-    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 4
-    |> elem(1)
-    |> Enum.reverse()
-    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 5
-    |> elem(1)
-    |> Enum.reverse()
-    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 6
-    |> elem(1)
-    |> Enum.reverse()
-    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 7
-    |> elem(1)
-    |> Enum.reverse()
-    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 8
-    |> elem(1)
-    |> Enum.reverse()
-    |> Enum.reduce({{0,0},[{0,0}]},&follow/2) # 9
-    |> elem(1)
-    |> Enum.reverse()
+    path = for _ <- 1..9, reduce: path do
+      acc ->
+        acc
+        |> Enum.reduce({{0,0},[{0,0}]},&follow/2)
+        |> elem(1)
+        |> Enum.reverse
+    end
+    path
     |> MapSet.new()
     |> MapSet.size()
   end
