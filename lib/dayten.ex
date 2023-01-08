@@ -17,21 +17,22 @@ defmodule Aoc22.DayTen do
     |> Enum.reduce([], &execution_plan/2)
     |> Enum.reverse()
     |> Enum.reduce([], &clock_cycle/2)
+    |> elem(1)
     |> Enum.reverse()
-    # |> then(fn list -> Enum.zip(list,1..length(list)) end)
-    # |> Enum.map(fn {x,y} -> x*y end)
+    |> then(fn list -> Enum.zip(list,1..length(list)) end)
+    |> Enum.map(fn {x,y} -> x*y end)
     |> Enum.drop(19)
     |> Enum.take_every(40)
-    # |> Enum.sum
+    |> Enum.sum
   end
 
   def execution_plan([noop: []] = instr,plan), do: [instr | plan]
   def execution_plan(instr, plan), do: [instr | [[noop: []] | plan]]
 
-  def clock_cycle([noop: []], []), do: [1]
-  def clock_cycle([noop: []], [x|_tl] = hist), do: [x|hist]
-  def clock_cycle([sub: y], [x|_tl] = hist), do: [x - y | hist]
-  def clock_cycle([add: y], [x|_tl] = hist), do: [x+y|hist]
+  def clock_cycle([noop: []], []), do: {1,[1]}
+  def clock_cycle([noop: []], {last_x, hist}), do: {last_x, [last_x|hist]}
+  def clock_cycle([sub: y], {_last_x, [x|_tl] = hist}), do: {x-y, [x|hist]}
+  def clock_cycle([add: y], {_last_x, [x|_tl] = hist}), do: {x+y, [x|hist]}
 end
 
 defmodule Aoc22.DayTenParser do
