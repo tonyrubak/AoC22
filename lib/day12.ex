@@ -1,7 +1,3 @@
-defmodule Aoc22.Queue do
-
-end
-
 defmodule Aoc22.Graph do
   def push({[], _}, item), do: {[item], []}
   def push({first, last}, item), do: {first, [item | last]}
@@ -139,14 +135,6 @@ defmodule Aoc22.DayTwelve do
       |> Enum.flat_map(fn node -> neighbors(node, nodes) end)
 
     graph = Graph.new(length(nodes),neighbors)
-    start =
-      nodes
-      |> Enum.filter(fn {_ind, node} ->
-        elem(node, 0) == :start
-      end)
-      |> hd()
-      |> elem(0)
-    start_node = Enum.at(graph, start)
 
     end_ind =
       nodes
@@ -156,8 +144,16 @@ defmodule Aoc22.DayTwelve do
       |> hd()
       |> elem(0)
 
-    dists = Graph.bfs(graph,start_node)
-    Enum.at(dists, end_ind)
+    nodes
+    |> Enum.filter(fn {_ind, node} ->
+      elem(node, 1) == 97
+    end)
+    |> Enum.map(fn it -> elem(it,0) end)
+    |> Enum.map(fn start -> Enum.at(graph,start) end)
+    |> Enum.map(fn start_node -> Graph.bfs(graph,start_node) end)
+    |> Enum.map(fn dists -> Enum.at(dists, end_ind) end)
+    |> Enum.filter(fn dist -> dist > 0 end)
+    |> Enum.min()
   end
 
   def neighbors({ind, node}, nodes) do
