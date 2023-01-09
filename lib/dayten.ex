@@ -36,7 +36,6 @@ defmodule Aoc22.DayTen do
   def clock_cycle([noop: []], {last_x, hist}), do: {last_x, [last_x|hist]}
   def clock_cycle([sub: y], {_last_x, [x|_tl] = hist}), do: {x-y, [x|hist]}
   def clock_cycle([add: y], {_last_x, [x|_tl] = hist}), do: {x+y, [x|hist]}
-
   def display(x,{clk,output}) do
     output = output <> if clk |> beam_position() |> sprite_visible(x) do
       "#"
