@@ -47,53 +47,6 @@ defmodule Aoc22.Graph do
     bfs_worker(graph, q, d, prev)
   end
 
-  def dijkstra_array(graph, start) do
-    d =
-      graph
-      |> Enum.map(fn _ -> length(graph) * 2 end)
-      |> List.replace_at(0, -1)
-      |> List.replace_at(start[:index], 0)
-
-    s =
-      graph
-      |> Enum.drop(1)
-      |> Enum.map(fn node -> node[:index] end)
-      |> MapSet.new()
-
-    dijkstra_worker(graph, d, s)
-  end
-
-  defp dijkstra_worker(graph, dists, s) do
-    if MapSet.size(s) > 0 do
-      {d, current} =
-        dists
-        |> Enum.zip(1..length(dists))
-        |> Enum.filter(fn {_, ind} -> ind in s end)
-        |> Enum.min(fn {l, _}, {r, _} -> l <= r end)
-      s = MapSet.delete(s, current)
-
-      neighbors =
-        graph
-        |> Enum.at(current)
-        |> Map.get(:neighbors)
-
-      dists = for i <- neighbors, reduce: dists do
-        acc ->
-          curr_dist = acc |> Enum.at(i)
-          List.replace_at(acc, i, Enum.min([curr_dist,d]))
-      end
-
-      dijkstra_worker(graph, dists, s)
-    else
-      len = length(graph)
-
-      Enum.map(dists, fn
-        ^len -> -1
-        d -> d
-      end)
-    end
-  end
-
   defp add_neighbor(graph, u, v),
     do: List.update_at(graph, u, fn node -> %{node | neighbors: [v | node[:neighbors]]} end)
 
