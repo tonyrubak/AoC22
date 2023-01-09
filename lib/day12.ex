@@ -7,9 +7,9 @@ defmodule Aoc22.Graph do
   def new(nvertex, edges) do
     nodes = Enum.map(0..nvertex, fn i -> new_node(i) end)
 
-    for {u,v} <- edges, reduce: nodes do
+    for {u, v} <- edges, reduce: nodes do
       acc ->
-        add_neighbor(acc,u,v)
+        add_neighbor(acc, u, v)
     end
   end
 
@@ -24,26 +24,30 @@ defmodule Aoc22.Graph do
 
     d = List.replace_at(d, start[:index], 0)
 
-    q = {[start],[]}
+    q = {[start], []}
     bfs_worker(graph, q, d, prev)
   end
 
-  def bfs_worker(_graph, {[],[]}, d, _), do: d
+  def bfs_worker(_graph, {[], []}, d, _), do: d
 
   def bfs_worker(graph, q, d, prev) do
     {current, q} = pop(q)
-    {q, d, prev} = for node_ind <- current[:neighbors], reduce: {q,d,prev} do
-      {q,d,prev} ->
-        node = Enum.at(graph, node_ind)
-        if Enum.at(d,node[:index]) == -1 do
-          q = push(q, node)
-          prev = List.replace_at(prev, node[:index], current[:index])
-          d = List.replace_at(d, node[:index], Enum.at(d, current[:index]) + 1)
-          {q,d,prev}
-        else
-          {q,d,prev}
-        end
-    end
+
+    {q, d, prev} =
+      for node_ind <- current[:neighbors], reduce: {q, d, prev} do
+        {q, d, prev} ->
+          node = Enum.at(graph, node_ind)
+
+          if Enum.at(d, node[:index]) == -1 do
+            q = push(q, node)
+            prev = List.replace_at(prev, node[:index], current[:index])
+            d = List.replace_at(d, node[:index], Enum.at(d, current[:index]) + 1)
+            {q, d, prev}
+          else
+            {q, d, prev}
+          end
+      end
+
     bfs_worker(graph, q, d, prev)
   end
 
@@ -83,11 +87,12 @@ defmodule Aoc22.DayTwelve do
       end)
 
     nodes = Enum.zip(1..length(nodes), nodes)
+
     neighbors =
       nodes
       |> Enum.flat_map(fn node -> neighbors(node, nodes) end)
 
-    graph = Graph.new(length(nodes),neighbors)
+    graph = Graph.new(length(nodes), neighbors)
 
     end_ind =
       nodes
@@ -101,17 +106,18 @@ defmodule Aoc22.DayTwelve do
     |> Enum.filter(fn {_ind, node} ->
       elem(node, 1) == 97
     end)
-    |> Enum.map(fn it -> elem(it,0) end)
-    |> Enum.map(fn start -> Enum.at(graph,start) end)
-    |> Enum.map(fn start_node -> Graph.bfs(graph,start_node) end)
+    |> Enum.map(fn it -> elem(it, 0) end)
+    |> Enum.map(fn start -> Enum.at(graph, start) end)
+    |> Enum.map(fn start_node -> Graph.bfs(graph, start_node) end)
     |> Enum.map(fn dists -> Enum.at(dists, end_ind) end)
     |> Enum.filter(fn dist -> dist > 0 end)
     |> Enum.min()
   end
 
   def neighbors({ind, node}, nodes) do
-    nodes = List.delete_at(nodes,ind-1)
-    node_inds = Enum.map nodes, fn node -> elem(node,0) end
+    nodes = List.delete_at(nodes, ind - 1)
+    node_inds = Enum.map(nodes, fn node -> elem(node, 0) end)
+
     vs =
       nodes
       |> Enum.map(fn other -> is_neighbor(node, other) end)
@@ -121,13 +127,14 @@ defmodule Aoc22.DayTwelve do
 
     us = Enum.map(1..length(vs), fn _ -> ind end)
 
-    Enum.zip(us,vs)
+    Enum.zip(us, vs)
   end
 
   def is_neighbor({_, lheight, {lx, ly}}, {_, {_, rheight, {rx, ry}}}) do
     dx = abs(lx - rx)
     dy = abs(ly - ry)
     adjacent = (dx == 0 and dy == 1) or (dx == 1 and dy == 0)
+
     if adjacent and rheight - 1 <= lheight do
       true
     else
