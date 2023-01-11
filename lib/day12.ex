@@ -96,16 +96,12 @@ defmodule Aoc22.DayTwelve do
 
     end_ind =
       nodes
-      |> Enum.filter(fn {_ind, node} ->
-        elem(node, 0) == :end
-      end)
+      |> Enum.filter(fn {_ind, node} -> elem(node, 0) == :end end)
       |> hd()
       |> elem(0)
 
     nodes
-    |> Enum.filter(fn {_ind, node} ->
-      elem(node, 1) == 97
-    end)
+    |> Enum.filter(fn {_ind, node} -> elem(node, 1) == 97 end)
     |> Enum.map(fn it -> elem(it, 0) end)
     |> Enum.map(fn start -> Enum.at(graph, start) end)
     |> Enum.map(fn start_node -> Graph.bfs(graph, start_node) end)
